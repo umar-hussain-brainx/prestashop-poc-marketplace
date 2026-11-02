@@ -1,0 +1,10 @@
+# Only the generated autoloader is committed (zero-step install); dev deps (phpunit) never are.
+/vendor/*
+!/vendor/autoload.php
+!/vendor/.htaccess
+!/vendor/composer/
+/vendor/composer/installed.json
+/.phpunit.cache/
+config*.xml
+/tests/e2e/node_modules/
+/tests/e2e/output/

@@ -1,0 +1,35 @@
+{
+    "name": "brainx/bxmpcollections",
+    "description": "BrainX marketplace custom categories and scheduled thematic collections",
+    "type": "prestashop-module",
+    "license": "proprietary",
+    "require": {
+        "php": ">=8.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "BrainX\\Collections\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "BrainX\\Collections\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "prepend-autoloader": false,
+        "autoloader-suffix": "BxmpCollections",
+        "optimize-autoloader": false,
+        "sort-packages": true
+    },
+    "scripts": {
+        "test": [
+            "@composer install --no-interaction --quiet",
+            "phpunit"
+        ],
+        "build": "@composer install --no-dev --no-interaction"
+    }
+}

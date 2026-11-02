@@ -1,0 +1,49 @@
+﻿vendor_sku;ean;reference;brand;title;description;category;price;discount_price;discount_from;discount_to;quantity;images;condition;variant_attributes;parent_reference;active
+A-1-1;8001001000015;demo_1;Studio Design;Hummingbird printed t-shirt;;;20,29;;;;19;;new;;;1
+A-1-2;8001001000022;demo_1;Studio Design;Hummingbird printed t-shirt;;;26,27;;;;19;;new;;;1
+A-1-3;8001001000039;demo_1;Studio Design;Hummingbird printed t-shirt;;;20,29;;;;33;;new;;;1
+A-1-4;8001001000046;demo_1;Studio Design;Hummingbird printed t-shirt;;;23,40;;;;18;;new;;;1
+A-1-5;8001001000053;demo_1;Studio Design;Hummingbird printed t-shirt;;;20,05;;;;10;;new;;;1
+A-1-6;8001001000060;demo_1;Studio Design;Hummingbird printed t-shirt;;;23,64;;;;20;;new;;;1
+A-1-7;8001001000077;demo_1;Studio Design;Hummingbird printed t-shirt;;;24,12;;;;12;;new;;;1
+A-1-8;8001001000084;demo_1;Studio Design;Hummingbird printed t-shirt;;;21,49;;;;25;;new;;;1
+VA-000090;8001002000090;;Studio Design;Hummingbird printed sweater;;;32,67;;;;33;;Nuovo;;;yes
+VA-000106;8001002000106;;Studio Design;Hummingbird printed sweater;;;34,82;;;;8;;Nuovo;;;yes
+VA-000113;8001002000113;;Studio Design;Hummingbird printed sweater;;;38,77;;;;36;;Nuovo;;;yes
+VA-000120;8001002000120;;Studio Design;Hummingbird printed sweater;;;38,77;;;;36;;Nuovo;;;yes
+VA-000136;8001003000136;;Graphic Corner;The best is yet to come' Framed poster;;;32,19;;;;15;;Nuovo;;;yes
+VA-000143;8001003000143;;Graphic Corner;The best is yet to come' Framed poster;;;54,88;;;;4;;Nuovo;;;yes
+VA-000150;8001003000150;;Graphic Corner;The best is yet to come' Framed poster;;;71,89;;;;10;;Nuovo;;;yes
+A-6-0;8002000000068;;Studio Design;Mug The best is yet to come;;;13,33;11,90;2026-11-01;31/12/2026;9;;;;;1
+A-8-0;8002000000082;;Studio Design;Mug Today is a good day;;;11,07;9,99;2026-11-01;31/12/2026;25;;;;;1
+VENDOR-A-P1;8000000000011;;;Product 1;;;5,00;;;;50;;;;;1
+VENDOR-A-P2;8000000000028;;;Product 2;;;40,00;;;;50;;;;;1
+VA-MUG-ADV;;demo_12;Studio Design;Mug The adventure begins;;;12,50;;;;18;;;;;
+VA-NEW-01;8003000000010;NH-1000;Nordic Home;Nordic stoneware mug 350 ml;<p>Nordic stoneware mug 350 ml — imported from the vendor A catalog.</p><ul><li>Brand: Nordic Home</li></ul>;Home > Kitchen > Mugs;8,90;;;;5;http://localhost/img/p/1/1.jpg|http://localhost/img/p/2/2.jpg;new;;;1
+VA-NEW-02;8003000000027;NH-1001;Nordic Home;Nordic stoneware mug 500 ml;<p>Nordic stoneware mug 500 ml — imported from the vendor A catalog.</p><ul><li>Brand: Nordic Home</li></ul>;Home > Kitchen > Mugs;10,50;;;;8;http://localhost/img/p/does-not-exist.jpg;new;;;1
+VA-NEW-03;8003000000034;NH-1002;Lumen & Co;Arc floor lamp brushed brass;<p>Arc floor lamp brushed brass — imported from the vendor A catalog.</p><ul><li>Brand: Lumen & Co</li></ul>;Home > Living > Lamps;1.299,00;;;;11;;new;;;1
+VA-NEW-04;8003000000041;NH-1003;Studio Design;Leather card holder;<p>Leather card holder — imported from the vendor A catalog.</p><ul><li>Brand: Studio Design</li></ul>;Accessories;24,00;19,90;2026-11-01 08:00;2026-11-30;14;;new;;;1
+VA-NEW-05;8003000000058;NH-1004;Lumen & Co;Designer table lamp opal;<p>Designer table lamp opal — imported from the vendor A catalog.</p><ul><li>Brand: Lumen & Co</li></ul>;Home > Living > Lamps;189,90;;;;17;;new;;;1
+VA-NEW-06;8003000000065;NH-1005;Graphic Corner;Canvas tote bag natural;<p>Canvas tote bag natural — imported from the vendor A catalog.</p><ul><li>Brand: Graphic Corner</li></ul>;Accessories;12,00;;;;20;;new;;;1
+VA-NEW-07;8003000000072;NH-1006;Nordic Home;Espresso cup set of 4;<p>Espresso cup set of 4 — imported from the vendor A catalog.</p><ul><li>Brand: Nordic Home</li></ul>;Home > Kitchen > Mugs;29,90;;;;23;;new;;;1
+VA-NEW-08;8003000000089;NH-1007;Graphic Corner;Dotted notebook A5 kraft;<p>Dotted notebook A5 kraft — imported from the vendor A catalog.</p><ul><li>Brand: Graphic Corner</li></ul>;Stationery;6,50;;;;26;;new;;;1
+VA-TEE-BS;8003000100017;BX-TEE-01-BS;BrainX Basics;BrainX organic cotton tee;<p>Organic cotton tee, regular fit.</p>;Home > Clothes;19,90;;;;10;http://localhost/img/p/1/1.jpg;new;Color:Black|Size:S;BX-TEE-01;1
+VA-TEE-BM;8003000100024;BX-TEE-01-BM;BrainX Basics;BrainX organic cotton tee;<p>Organic cotton tee, regular fit.</p>;Home > Clothes;21,90;;;;10;;new;Color:Black|Size:M;BX-TEE-01;1
+VA-TEE-WM;8003000100031;BX-TEE-01-WM;BrainX Basics;BrainX organic cotton tee;<p>Organic cotton tee, regular fit.</p>;Home > Clothes;21,90;;;;10;;new;Color:White|Size:M;BX-TEE-01;1
+VA-NEW-NOEAN;;LMN-9001;Lumen & Co;Pendant cable kit black;;;14,90;;;;7;;;;;
+VA-AMB-REF;;demo_1;Studio Design;T-shirt hummingbird print;;;19,00;;;;3;;;;;
+VA-AMB-TITLE;;;;Hummingbird printed t-shirt;;;19,50;;;;4;;;;;
+VA-CONFLICT;8002000000037;;Acme Posters;The best is yet to come framed poster;;;30,00;;;;2;;;;;
+VA-AMB-CUSHION;8003000099991;;Studio Design;Hummingbird cushion;;;15,00;;;;6;;;;;
+VA-BAD-PRICE;8003000080012;;;Bad price;;;abc;;;;1;;;;;
+;8003000080029;;;Missing SKU;;;3,00;;;;1;;;;;
+VA-BAD-EAN;8,00E+12;;;Excel mangled EAN;;;3,00;;;;1;;;;;
+VA-BAD-QTY;8003000080043;;;Fractional stock;;;3,00;;;;1,5;;;;;
+VA-BAD-DISC;8003000080050;;;Discount above price;;;10,00;12,00;;;1;;;;;
+VA-BAD-DATE;8003000080067;;;Impossible date;;;10,00;8,00;31/02/2026;;1;;;;;
+VA-BAD-COND;8003000080074;;;Unknown condition;;;10,00;;;;1;;broken;;;
+VA-NEW-01;8003000080081;;;Duplicate SKU row;;;10,00;;;;1;;;;;
+VA-BAD-ACTIVE;8003000080098;;;Bad active flag;;;10,00;;;;1;;;;;maybe
+VA-BAD-VARIANT;8003000080104;;;Bad variant;;;10,00;;;;1;;;Red;;
+VA-WARN-EAN;8003000000999;;Nordic Home;Bamboo serving board large;;;22,00;;;;9;;;;;
+VA-WARN-TITLE;8003000000201;;Nordic Home;Ceramic vase <limited> edition #3;;Home > Living;45,00;;;;2;;;;;

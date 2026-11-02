@@ -1,0 +1,11 @@
+{
+  "name": "bxmpvendorportal-e2e",
+  "private": true,
+  "description": "Vendor portal end-to-end checks (Playwright library, headless Chromium)",
+  "scripts": {
+    "test": "node portal.e2e.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.48.0"
+  }
+}

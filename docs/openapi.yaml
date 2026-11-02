@@ -1,0 +1,486 @@
+openapi: 3.0.3
+info:
+  title: BrainX Marketplace internal API
+  version: 1.0.0
+  description: |
+    Internal JSON API of the `bxmarketplace` core module (PrestaShop 9 multi-vendor marketplace POC).
+    PrestaShop routes module front controllers through query parameters, so every operation is served by
+    `GET|POST|PUT|PATCH /index.php?fc=module&module=bxmarketplace&controller=api&resource=<path>`.
+    The paths below are the values of `resource` (written as REST paths for readability).
+    All money is EUR, tax excluded. See docs/API.md for examples.
+servers:
+  - url: http://localhost:8080/index.php?fc=module&module=bxmarketplace&controller=api&resource=
+    description: Local docker stack (append the resource path, e.g. `vendors`)
+security:
+  - bearerAuth: []
+paths:
+  /me:
+    get:
+      summary: Token introspection
+      responses:
+        '200':
+          description: Token scope
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id_api_token: { type: integer }
+                      scope: { type: string, enum: [admin, vendor] }
+                      id_vendor: { type: integer, nullable: true }
+                      label: { type: string }
+        '401': { $ref: '#/components/responses/Error' }
+  /vendors:
+    get:
+      summary: List vendors (vendor token sees only itself)
+      responses:
+        '200':
+          description: Vendors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { type: array, items: { $ref: '#/components/schemas/Vendor' } }
+                  meta: { type: object, properties: { count: { type: integer } } }
+        '401': { $ref: '#/components/responses/Error' }
+  /vendors/{id_vendor}:
+    get:
+      summary: Vendor detail with shipping rules
+      parameters:
+        - { name: id_vendor, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: Vendor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    allOf:
+                      - $ref: '#/components/schemas/Vendor'
+                      - type: object
+                        properties:
+                          shipping_rules: { type: array, items: { $ref: '#/components/schemas/ShippingRule' } }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+  /offers:
+    get:
+      summary: List offers (vendor token is forced to its own id_vendor)
+      parameters:
+        - { name: id_vendor, in: query, schema: { type: integer } }
+        - { name: id_product, in: query, schema: { type: integer } }
+        - { name: id_product_attribute, in: query, schema: { type: integer } }
+        - { name: active, in: query, schema: { type: integer, enum: [0, 1] } }
+        - { name: ean13, in: query, schema: { type: string } }
+        - { $ref: '#/components/parameters/limit' }
+        - { $ref: '#/components/parameters/offset' }
+      responses:
+        '200':
+          description: Offers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { type: array, items: { $ref: '#/components/schemas/Offer' } }
+                  meta: { $ref: '#/components/schemas/ListMeta' }
+        '403': { $ref: '#/components/responses/Error' }
+    post:
+      summary: Upsert one offer or a batch (key = id_vendor + id_product + id_product_attribute)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/OfferInput'
+                - type: object
+                  required: [offers]
+                  properties:
+                    offers: { type: array, maxItems: 500, items: { $ref: '#/components/schemas/OfferInput' } }
+      responses:
+        '201':
+          description: Saved offer (single) or offers (batch)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    oneOf:
+                      - $ref: '#/components/schemas/Offer'
+                      - type: array
+                        items: { $ref: '#/components/schemas/Offer' }
+        '207':
+          description: Batch partially saved (see `errors`)
+        '403': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /offers/{id_offer}:
+    parameters:
+      - { name: id_offer, in: path, required: true, schema: { type: integer } }
+    get:
+      summary: Offer detail
+      responses:
+        '200':
+          description: Offer
+          content:
+            application/json:
+              schema: { type: object, properties: { data: { $ref: '#/components/schemas/Offer' } } }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+    patch:
+      summary: Partial update (identity fields are immutable)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/OfferInput' }
+      responses:
+        '200':
+          description: Updated offer
+          content:
+            application/json:
+              schema: { type: object, properties: { data: { $ref: '#/components/schemas/Offer' } } }
+        '403': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+    put:
+      summary: Same as PATCH
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/OfferInput' }
+      responses:
+        '200': { description: Updated offer }
+  /products/{id_product}/offers:
+    get:
+      summary: Price comparison of a master product's offers
+      parameters:
+        - { name: id_product, in: path, required: true, schema: { type: integer } }
+        - { name: id_product_attribute, in: query, schema: { type: integer } }
+        - { name: quantity, in: query, schema: { type: integer, minimum: 1, default: 1 } }
+        - { name: country_iso, in: query, schema: { type: string, example: IT } }
+        - { name: id_country, in: query, schema: { type: integer } }
+        - { name: postcode, in: query, schema: { type: string, example: '20121' } }
+      responses:
+        '200':
+          description: Offers ranked per combination
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id_product: { type: integer }
+                        id_product_attribute: { type: integer }
+                        best_offer_id: { type: integer, nullable: true }
+                        offers: { type: array, items: { $ref: '#/components/schemas/ComparisonRow' } }
+        '404': { $ref: '#/components/responses/Error' }
+  /cart/optimize:
+    post:
+      summary: Smart Cart Optimizer (stateless) — lowest total incl. per-vendor shipping
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/OptimizeRequest' }
+            example:
+              lines:
+                - { id_product: 20, id_product_attribute: 0, quantity: 1 }
+                - { id_product: 21, id_product_attribute: 0, quantity: 1 }
+              destination: { country_iso: IT, postcode: '20121' }
+      responses:
+        '200':
+          description: Optimal allocation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: '#/components/schemas/AllocationResult' }
+                  meta:
+                    type: object
+                    properties:
+                      offers_source: { type: string, enum: [catalog, request] }
+                      destination: { $ref: '#/components/schemas/Destination' }
+        '422':
+          description: Validation error or `unavailable_product` (details.lines lists the shortages)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /vendor-orders:
+    get:
+      summary: Vendor sub-orders (vendor token sees only its own)
+      parameters:
+        - { name: id_vendor, in: query, schema: { type: integer } }
+        - { name: id_order, in: query, schema: { type: integer } }
+        - { name: status, in: query, schema: { type: string, enum: [pending, accepted, shipped, delivered, cancelled] } }
+        - { name: date_from, in: query, schema: { type: string, format: date } }
+        - { name: date_to, in: query, schema: { type: string, format: date } }
+        - { name: with_lines, in: query, schema: { type: integer, enum: [0, 1] } }
+        - { $ref: '#/components/parameters/limit' }
+        - { $ref: '#/components/parameters/offset' }
+      responses:
+        '200':
+          description: Vendor orders
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { type: array, items: { $ref: '#/components/schemas/VendorOrder' } }
+                  meta: { $ref: '#/components/schemas/ListMeta' }
+  /vendor-orders/{id_vendor_order}:
+    get:
+      summary: Vendor order with lines
+      parameters:
+        - { name: id_vendor_order, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: Vendor order
+          content:
+            application/json:
+              schema: { type: object, properties: { data: { $ref: '#/components/schemas/VendorOrder' } } }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: 64-hex token from bxmp_api_token (admin scope when id_vendor is NULL). Fallback header X-Bxmp-Token.
+  parameters:
+    limit: { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 1000, default: 100 } }
+    offset: { name: offset, in: query, schema: { type: integer, minimum: 0, default: 0 } }
+  responses:
+    Error:
+      description: Error
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code: { type: string, enum: [bad_request, unauthorized, forbidden, not_found, method_not_allowed, validation_error, unavailable_product, internal_error] }
+            message: { type: string }
+            details: { type: object }
+    ListMeta:
+      type: object
+      properties:
+        count: { type: integer }
+        total: { type: integer }
+        limit: { type: integer }
+        offset: { type: integer }
+    Vendor:
+      type: object
+      properties:
+        id_vendor: { type: integer }
+        name: { type: string }
+        code: { type: string }
+        email: { type: string, nullable: true }
+        company: { type: string, nullable: true }
+        vat_number: { type: string, nullable: true }
+        active: { type: boolean }
+        commission_rate: { type: number, description: percent }
+        commission_fixed: { type: number, description: EUR per order line }
+        date_add: { type: string }
+        date_upd: { type: string }
+    ShippingRule:
+      type: object
+      properties:
+        id_shipping_rule: { type: integer }
+        id_vendor: { type: integer }
+        id_country: { type: integer, description: 0 = all countries }
+        zipcode_pattern: { type: string, nullable: true, example: '20,21,00100-00199' }
+        excluded: { type: boolean, description: vendor does NOT deliver to matching destinations }
+        base_cost: { type: number }
+        free_threshold: { type: number, nullable: true }
+        reduced_threshold: { type: number, nullable: true }
+        reduced_cost: { type: number, nullable: true }
+        priority: { type: integer }
+    OfferInput:
+      type: object
+      properties:
+        id_vendor: { type: integer, description: required for admin tokens }
+        id_product: { type: integer }
+        id_product_attribute: { type: integer, default: 0 }
+        vendor_sku: { type: string }
+        ean13: { type: string }
+        price: { type: number, minimum: 0 }
+        discount_price: { type: number, nullable: true }
+        discount_from: { type: string, nullable: true, example: '2026-11-01 00:00:00' }
+        discount_to: { type: string, nullable: true }
+        quantity: { type: integer, minimum: 0 }
+        condition: { type: string, enum: [new, used, refurbished] }
+        active: { type: boolean }
+    Offer:
+      allOf:
+        - $ref: '#/components/schemas/OfferInput'
+        - type: object
+          properties:
+            id_offer: { type: integer }
+            vendor_name: { type: string }
+            date_add: { type: string }
+            date_upd: { type: string }
+    ComparisonRow:
+      type: object
+      properties:
+        id_offer: { type: integer }
+        id_vendor: { type: integer }
+        vendor_name: { type: string }
+        id_product: { type: integer }
+        id_product_attribute: { type: integer }
+        condition: { type: string }
+        price: { type: number }
+        effective_price: { type: number }
+        on_discount: { type: boolean }
+        quantity: { type: integer }
+        available: { type: boolean }
+        deliverable: { type: boolean, nullable: true }
+        shipping_cost: { type: number, nullable: true }
+        landed_total: { type: number }
+        rank: { type: integer, nullable: true }
+        best: { type: boolean }
+        ineligible_reason: { type: string, nullable: true, enum: [inactive, out_of_stock, insufficient_stock, no_delivery_to_destination, null] }
+    Destination:
+      type: object
+      properties:
+        id_country: { type: integer }
+        country_iso: { type: string }
+        postcode: { type: string }
+    OptimizeRequest:
+      type: object
+      required: [lines]
+      properties:
+        lines:
+          type: array
+          maxItems: 500
+          items:
+            type: object
+            required: [id_product, quantity]
+            properties:
+              id_product: { type: integer }
+              id_product_attribute: { type: integer, default: 0 }
+              quantity: { type: integer, minimum: 1 }
+        destination: { $ref: '#/components/schemas/Destination' }
+        allow_partial: { type: boolean, default: false }
+        offers:
+          type: array
+          description: Optional — when present the optimizer runs only on this data (what-if simulation)
+          items:
+            type: object
+            properties:
+              id_offer: { type: integer }
+              id_vendor: { type: integer }
+              id_product: { type: integer }
+              id_product_attribute: { type: integer }
+              price: { type: number }
+              quantity: { type: integer }
+              vendor_sku: { type: string }
+        shipping_policies:
+          type: array
+          items:
+            type: object
+            properties:
+              id_vendor: { type: integer }
+              name: { type: string }
+              rules: { type: array, items: { $ref: '#/components/schemas/ShippingRule' } }
+    AllocationResult:
+      type: object
+      properties:
+        total: { type: number }
+        items_total: { type: number }
+        shipping_total: { type: number }
+        vendor_count: { type: integer }
+        complete: { type: boolean }
+        vendors:
+          type: array
+          items:
+            type: object
+            properties:
+              id_vendor: { type: integer }
+              vendor_name: { type: string, nullable: true }
+              subtotal: { type: number }
+              shipping_cost: { type: number }
+              shipping_tier: { type: string, enum: [base, reduced, free] }
+              total: { type: number }
+              lines:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id_product: { type: integer }
+                    id_product_attribute: { type: integer }
+                    id_offer: { type: integer }
+                    vendor_sku: { type: string, nullable: true }
+                    quantity: { type: integer }
+                    unit_price: { type: number }
+                    line_total: { type: number }
+        strategy:
+          type: object
+          properties:
+            mode: { type: string, enum: [exact, heuristic] }
+            proven_optimal: { type: boolean }
+            nodes_explored: { type: integer }
+            duration_ms: { type: number }
+        alternatives:
+          type: array
+          items:
+            type: object
+            properties:
+              label: { type: string }
+              total: { type: number, nullable: true }
+              feasible: { type: boolean }
+              vendors: { type: array, items: { type: integer } }
+              note: { type: string }
+        explanation: { type: array, items: { type: string } }
+        excluded_offers:
+          type: array
+          items:
+            type: object
+            properties:
+              id_offer: { type: integer }
+              id_vendor: { type: integer }
+              reason: { type: string, enum: [out_of_stock, no_delivery_to_destination] }
+        unavailable:
+          type: array
+          items:
+            type: object
+            properties:
+              id_product: { type: integer }
+              id_product_attribute: { type: integer }
+              requested: { type: integer }
+              available: { type: integer }
+    VendorOrder:
+      type: object
+      properties:
+        id_vendor_order: { type: integer }
+        id_order: { type: integer }
+        id_vendor: { type: integer }
+        vendor_name: { type: string }
+        reference: { type: string }
+        total_products: { type: string }
+        total_shipping: { type: string }
+        total_paid: { type: string }
+        commission_amount: { type: string }
+        vendor_payout: { type: string }
+        status: { type: string, enum: [pending, accepted, shipped, delivered, cancelled] }
+        tracking_number: { type: string, nullable: true }
+        carrier_name: { type: string, nullable: true }
+        payment_transfer_ref: { type: string, nullable: true }
+        date_add: { type: string }
+        date_upd: { type: string }
+        lines: { type: array, items: { type: object } }

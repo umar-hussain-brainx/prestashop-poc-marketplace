@@ -9,14 +9,14 @@ ModuleFrontController / ModuleAdminController and the carrier-module API.
 
 | # | Scope module | PrestaShop module | Notes |
 |---|---|---|---|
-| 1 | Vendor Management | `bxmarketplace` (admin CRUD, roles) + `bxmpvendor` (vendor portal) | |
+| 1 | Vendor Management | `bxmarketplace` (admin CRUD, roles) + `bxmpvendorportal` (vendor portal) | |
 | 2 | CSV Import/Export & Sync | `bxmpcsv` | async job queue + cron |
 | 3 | Master Catalog & Matching | `bxmarketplace` (MatchingEngine) + `bxmpcsv` (exception queue UI) | |
 | 4 | Price Comparison | `bxmarketplace` (PriceComparator) + `bxmpcheckout` (product-page offer table) | |
 | 5 | Smart Cart Optimizer | `bxmarketplace` (CartOptimizer, pure PHP) + `bxmpcheckout` (integration) | |
 | 6 | Multi-Vendor Shipping & Checkout | `bxmpcheckout` (carrier module, order split, payment allocation) | |
 | 7 | Commission Management | `bxmarketplace` (CommissionCalculator) + `bxmpadmin` (settlements) | |
-| 8 | Vendor Dashboard & Analytics | `bxmpvendor` | |
+| 8 | Vendor Dashboard & Analytics | `bxmpvendorportal` | |
 | 9 | Central Admin & Analytics | `bxmpadmin` | |
 | 10 | Categories & Thematic Collections | `bxmpcollections` | |
 
@@ -69,7 +69,7 @@ bxmp_settlement        id_settlement PK, id_vendor, period_from DATE, period_to 
 bxmp_collection        id_collection PK, name, slug, description, active, date_start DATETIME NULL,
                        date_end DATETIME NULL, position, date_add, date_upd
 bxmp_collection_product id_collection, id_product, position  PRIMARY(id_collection,id_product)
-bxmp_collection_category id_collection, id_category  (all products of category included)
+bxmp_collection_category id_collection, id_category  PRIMARY(id_collection,id_category) (all products of category included)
 bxmp_log               id_log PK, channel VARCHAR(32), level VARCHAR(16), message TEXT, context TEXT, date_add
 bxmp_api_token         id_api_token PK, token CHAR(64) unique, label, id_vendor NULL (NULL = admin scope), active, date_add
 ```
@@ -93,6 +93,33 @@ Pure-PHP (no PrestaShop dependency, unit-tested with PHPUnit in `modules/bxmarke
 PrestaShop-bound (`Infrastructure\`): repositories built on `Db::getInstance()`, `Logger` writing `bxmp_log`,
 `Api\Router` serving `index.php?fc=module&module=bxmarketplace&controller=api&resource=...` with Bearer token
 (`bxmp_api_token`). API documented in `docs/API.md` (OpenAPI 3 in `docs/openapi.yaml`).
+
+### Implementation notes (core module as built — see `modules/bxmarketplace/README.md` for the full public API)
+
+- **Autoload**: `require_once _PS_MODULE_DIR_ . 'bxmarketplace/vendor/autoload.php'` gives PSR-4 `BrainX\Marketplace\`
+  plus a classmap of the ObjectModels in `classes/` (`BxmpVendor`, `BxmpVendorUser`, `BxmpOffer`, `BxmpShippingRule`,
+  `BxmpMatchException`, `BxmpImportJob`, `BxmpFeed`, `BxmpCartAllocation`, `BxmpVendorOrder`, `BxmpVendorOrderLine`,
+  `BxmpCommissionAdjustment`, `BxmpSettlement`, `BxmpCollection`, `BxmpApiToken`). `vendor/` holds only the no-dev autoloader.
+- **Optimizer value objects** live in `Domain\Optimizer\`: `BasketLine`, `OfferCandidate` (effective unit price + stock),
+  `ShippingPolicy` (vendor id + `Domain\Shipping\ShippingRule[]`), `Destination` (id_country, postcode),
+  `AllocationResult` (`VendorAllocation[]` → `AllocatedLine[]`, totals, mode exact|heuristic, alternatives, explanation),
+  `UnavailableProductException`. Exact B&B when ≤ 12 distinct lines (configurable `BXMP_OPT_EXACT_MAX_LINES`), else a
+  time-boxed (1.5 s) multi-start local search.
+- **Shipping semantics**: a vendor with no rules ships free everywhere; a vendor with rules but none matching does not
+  deliver; highest `priority` wins, then most specific (zip > country > all); an `excluded` winner = no delivery.
+- **Facades for satellite modules**: `Infrastructure\Service\CartOptimizationService` (`optimize()`, `optimizeCart(Cart)`)
+  and `Infrastructure\Service\PriceComparisonService`; `Repository\CartAllocationRepository::save($idCart, $result)`
+  persists `bxmp_cart_allocation` + `bxmp_cart_shipping`.
+- **Matching**: EAN check digit is validated but, by default, an EAN with a bad check digit is still used for an exact
+  match (reason `ean_exact_checksum_warning`) — the client demo EANs 8000000000011/8000000000028 are not GS1-valid.
+  Title similarity never auto-matches by default (goes to the exception queue as `ambiguous`).
+- **Custom hooks** created by the core: `actionBxmpCartOptimized`, `actionBxmpOfferUpdated` (dispatched by core),
+  `actionBxmpVendorOrderCreated` (bxmpcheckout dispatches), `actionBxmpVendorOrderStatusUpdate` (bxmpvendorportal/bxmpadmin dispatch).
+- **Back-office tabs** (parent `AdminBxMarketplace` under SELL): `AdminBxmpVendors`, `AdminBxmpVendorUsers`,
+  `AdminBxmpShippingRules`, `AdminBxmpOffers`; API tokens are managed in the module configuration page.
+- **API resources**: `me`, `vendors[/{id}]`, `offers[/{id}]` (GET/POST upsert/PATCH), `products/{id}/offers`,
+  `cart/optimize` (catalog or fully stateless with inline offers/policies), `vendor-orders[/{id}]`.
+- **Demo data**: `php modules/bxmarketplace/tools/seed_demo.php` (run as www-data inside the container, idempotent).
 
 ## Integration approach (no core modifications)
 
