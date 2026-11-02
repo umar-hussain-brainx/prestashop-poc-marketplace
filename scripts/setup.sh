@@ -17,7 +17,9 @@ done
 
 echo "* Seeding demo data (vendors, offers, client reference scenario)"
 $PS php modules/bxmarketplace/tools/seed_demo.php
-[ -f modules/bxmpvendorportal/tools/seed_history.php ] && $PS php modules/bxmpvendorportal/tools/seed_history.php || true
+[ -f modules/bxmpcheckout/tools/setup_demo.php ] && $PS php modules/bxmpcheckout/tools/setup_demo.php || true
+[ -f modules/bxmpcsv/tools/seed_feeds.php ] && $PS php modules/bxmpcsv/tools/seed_feeds.php || true
+[ -f modules/bxmpvendorportal/tools/seed_history.php ] && $PS php modules/bxmpvendorportal/tools/seed_history.php --staff || true
 [ -f modules/bxmpcollections/tools/cron.php ] && $PS php modules/bxmpcollections/tools/cron.php || true
 
 $PS php bin/console cache:clear >/dev/null 2>&1 || true
