@@ -25,12 +25,12 @@ The make-or-break requirement is the **Smart Cart Optimizer (scope §5)**, and i
 
 | Evidence | Result |
 |---|---|
-| Unit tests (PHPUnit, 6 suites) | **190 tests green**: core 43, CSV 59, checkout 24, vendor portal 34*, admin 8, collections 17 |
+| Unit tests (PHPUnit, 6 suites) | **190 tests green**: core 43, CSV 59, checkout 24, vendor portal 34, admin 8, collections 17 |
 | Browser E2E (Playwright, headless Chromium) on a clean `docker compose down -v` reinstall | checkout **30/30**, vendor portal **73/73**, collections **11/11** |
 | Back-office sweep | all 18 Marketplace tabs + their edit forms + native Orders/Products pages render with no errors |
 | Reproducibility | `docker compose up -d && ./scripts/setup.sh` rebuilds the full demo from nothing |
 
-\* *Vendor-portal suite count is from its author's run. My independent re-run of the other five suites matched their reported counts exactly.*
+All six suites were re-run independently during integration and match.
 
 The main risks are not platform blockers but design decisions to agree with the client:
 
