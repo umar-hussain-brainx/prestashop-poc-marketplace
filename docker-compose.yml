@@ -42,7 +42,7 @@ services:
       - ./modules/bxmarketplace:/var/www/html/modules/bxmarketplace
       - ./modules/bxmpcsv:/var/www/html/modules/bxmpcsv
       - ./modules/bxmpcheckout:/var/www/html/modules/bxmpcheckout
-      - ./modules/bxmpvendor:/var/www/html/modules/bxmpvendor
+      - ./modules/bxmpvendorportal:/var/www/html/modules/bxmpvendorportal   # vendor portal ("bxmpvendor" would clash with core class BxmpVendor)
       - ./modules/bxmpadmin:/var/www/html/modules/bxmpadmin
       - ./modules/bxmpcollections:/var/www/html/modules/bxmpcollections
       - ./var/feeds:/var/www/html/var/bxmp_feeds

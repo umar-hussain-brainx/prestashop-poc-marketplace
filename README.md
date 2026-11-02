@@ -24,6 +24,6 @@ docker compose up -d          # first boot auto-installs PrestaShop 9.0.3 (~1-2 
 | `modules/bxmarketplace` | Core: schema, domain engines (matching, price comparison, cart optimizer, commissions), internal API, vendor admin |
 | `modules/bxmpcsv` | Standardized CSV import/export, async job queue, scheduled feed sync, matching exceptions |
 | `modules/bxmpcheckout` | Smart cart integration, vendor shipping carrier, order splitting, payment allocation |
-| `modules/bxmpvendor` | Vendor portal: offers, inventory, orders, shipments, analytics |
+| `modules/bxmpvendorportal` | Vendor portal: offers, inventory, orders, shipments, analytics |
 | `modules/bxmpadmin` | Central analytics, settlements, exportable reports |
 | `modules/bxmpcollections` | Thematic collections with scheduled activation |

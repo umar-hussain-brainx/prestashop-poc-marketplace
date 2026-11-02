@@ -9,14 +9,14 @@ ModuleFrontController / ModuleAdminController and the carrier-module API.
 
 | # | Scope module | PrestaShop module | Notes |
 |---|---|---|---|
-| 1 | Vendor Management | `bxmarketplace` (admin CRUD, roles) + `bxmpvendor` (vendor portal) | |
+| 1 | Vendor Management | `bxmarketplace` (admin CRUD, roles) + `bxmpvendorportal` (vendor portal) | |
 | 2 | CSV Import/Export & Sync | `bxmpcsv` | async job queue + cron |
 | 3 | Master Catalog & Matching | `bxmarketplace` (MatchingEngine) + `bxmpcsv` (exception queue UI) | |
 | 4 | Price Comparison | `bxmarketplace` (PriceComparator) + `bxmpcheckout` (product-page offer table) | |
 | 5 | Smart Cart Optimizer | `bxmarketplace` (CartOptimizer, pure PHP) + `bxmpcheckout` (integration) | |
 | 6 | Multi-Vendor Shipping & Checkout | `bxmpcheckout` (carrier module, order split, payment allocation) | |
 | 7 | Commission Management | `bxmarketplace` (CommissionCalculator) + `bxmpadmin` (settlements) | |
-| 8 | Vendor Dashboard & Analytics | `bxmpvendor` | |
+| 8 | Vendor Dashboard & Analytics | `bxmpvendorportal` | |
 | 9 | Central Admin & Analytics | `bxmpadmin` | |
 | 10 | Categories & Thematic Collections | `bxmpcollections` | |
 
@@ -114,7 +114,7 @@ PrestaShop-bound (`Infrastructure\`): repositories built on `Db::getInstance()`,
   match (reason `ean_exact_checksum_warning`) — the client demo EANs 8000000000011/8000000000028 are not GS1-valid.
   Title similarity never auto-matches by default (goes to the exception queue as `ambiguous`).
 - **Custom hooks** created by the core: `actionBxmpCartOptimized`, `actionBxmpOfferUpdated` (dispatched by core),
-  `actionBxmpVendorOrderCreated` (bxmpcheckout dispatches), `actionBxmpVendorOrderStatusUpdate` (bxmpvendor/bxmpadmin dispatch).
+  `actionBxmpVendorOrderCreated` (bxmpcheckout dispatches), `actionBxmpVendorOrderStatusUpdate` (bxmpvendorportal/bxmpadmin dispatch).
 - **Back-office tabs** (parent `AdminBxMarketplace` under SELL): `AdminBxmpVendors`, `AdminBxmpVendorUsers`,
   `AdminBxmpShippingRules`, `AdminBxmpOffers`; API tokens are managed in the module configuration page.
 - **API resources**: `me`, `vendors[/{id}]`, `offers[/{id}]` (GET/POST upsert/PATCH), `products/{id}/offers`,
