@@ -64,7 +64,13 @@ final class SpecificPriceWriter
             $sp->reduction_type = 'amount';
             $sp->from = '0000-00-00 00:00:00';
             $sp->to = '0000-00-00 00:00:00';
-            $sp->add();
+            try {
+                $sp->add();
+            } catch (\PrestaShopDatabaseException|\PDOException $e) {
+                // concurrent request (e.g. ajax refresh) inserted the same cart row first: converge on our price
+                \Db::getInstance()->update('specific_price', ['price' => $price], 'id_cart = ' . $idCart . ' AND id_product = ' . $idProduct
+                    . ' AND id_product_attribute = ' . $idAttr . ' AND id_specific_price_rule = 0');
+            }
             $changed = true;
         }
         if ($changed) {
