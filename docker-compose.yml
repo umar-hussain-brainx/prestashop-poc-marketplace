@@ -1,0 +1,52 @@
+# BrainX Multi-Vendor Marketplace POC — PrestaShop 9.0.3 (stable) + MariaDB 10.11
+# Custom modules are bind-mounted individually so PrestaShop's native modules stay intact.
+services:
+  db:
+    image: mirror.gcr.io/library/mariadb:10.11
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: prestashop
+      MARIADB_USER: prestashop
+      MARIADB_PASSWORD: prestashop
+    ports: ["3307:3306"]
+    volumes: [db_data:/var/lib/mysql]
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      retries: 30
+
+  prestashop:
+    image: mirror.gcr.io/prestashop/prestashop:9.0   # PrestaShop 9.0.3, PHP 8.4, Apache
+    depends_on:
+      db: { condition: service_healthy }
+    environment:
+      DB_SERVER: db
+      DB_NAME: prestashop
+      DB_USER: prestashop
+      DB_PASSWD: prestashop
+      DB_PREFIX: ps_
+      PS_INSTALL_AUTO: 1
+      PS_DOMAIN: localhost:8080
+      PS_FOLDER_ADMIN: admin-dev
+      PS_COUNTRY: IT
+      PS_LANGUAGE: en
+      PS_DEV_MODE: 0
+      ADMIN_MAIL: admin@marketplace.test
+      ADMIN_PASSWD: Admin123!
+    ports: ["8080:80"]
+    extra_hosts:
+      - "i18n.prestashop-project.org:127.0.0.1"   # offline language-pack workaround (see docker/pre-install-scripts)
+    volumes:
+      - ps_data:/var/www/html
+      - ./docker/pre-install-scripts:/tmp/pre-install-scripts:ro
+      - ./modules/bxmarketplace:/var/www/html/modules/bxmarketplace
+      - ./modules/bxmpcsv:/var/www/html/modules/bxmpcsv
+      - ./modules/bxmpcheckout:/var/www/html/modules/bxmpcheckout
+      - ./modules/bxmpvendor:/var/www/html/modules/bxmpvendor
+      - ./modules/bxmpadmin:/var/www/html/modules/bxmpadmin
+      - ./modules/bxmpcollections:/var/www/html/modules/bxmpcollections
+      - ./var/feeds:/var/www/html/var/bxmp_feeds
+
+volumes:
+  db_data:
+  ps_data:

@@ -1,0 +1,7 @@
+/var/
+.phpunit.cache/
+.phpunit.result.cache
+node_modules/
+*.log
+.DS_Store
+/scratch/
