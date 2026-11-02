@@ -86,6 +86,9 @@ class AdminBxmpMatchExceptionsController extends ModuleAdminController
                     throw new InvalidArgumentException('Select a candidate or enter a product id.');
                 }
                 $o = $this->service->link($id, $idP, $idA);
+                foreach ($o->warnings as $w) {
+                    $this->warnings[] = $w;
+                }
                 $this->redirectWithMessage(sprintf('Exception #%d linked to product #%d%s — offer #%d written.', $id, $idP, $idA ? ' / combination #' . $idA : '', $o->idOffer));
             } elseif (Tools::isSubmit('bxmpCreate')) {
                 $o = $this->service->createProduct($id);

@@ -154,8 +154,16 @@ final class MatchExceptionService
         if ($idProductAttribute && !(int) \Db::getInstance()->getValue('SELECT 1 FROM `' . _DB_PREFIX_ . 'product_attribute` WHERE id_product_attribute = ' . $idProductAttribute . ' AND id_product = ' . $idProduct)) {
             throw new \InvalidArgumentException('Combination #' . $idProductAttribute . ' does not belong to product #' . $idProduct);
         }
+        $row = $this->row($ex);
+        $warnings = [];
+        $otherSku = (string) \Db::getInstance()->getValue('SELECT vendor_sku FROM `' . _DB_PREFIX_ . 'bxmp_offer` WHERE id_vendor = ' . (int) $ex['id_vendor']
+            . ' AND id_product = ' . $idProduct . ' AND id_product_attribute = ' . $idProductAttribute);
+        if ($otherSku !== '' && $otherSku !== (string) $row['vendor_sku']) {
+            // one offer per vendor and product/combination: the two vendor SKUs now share (and overwrite) the same offer
+            $warnings[] = 'the vendor already had offer SKU ' . $otherSku . ' on this product/combination; it is replaced by ' . $row['vendor_sku'];
+        }
         $proc = $this->processor($ex);
-        $outcome = $proc->writeOffer($this->row($ex), $idProduct, $idProductAttribute, RowOutcome::UPDATED, 'linked manually');
+        $outcome = $proc->writeOffer($row, $idProduct, $idProductAttribute, RowOutcome::UPDATED, 'linked manually', $warnings);
         $proc->stock()->flush();
         $this->close($id, 'resolved', $idProduct);
         Logger::channel('csv')->info('Matching exception linked', ['id_match_exception' => $id, 'id_product' => $idProduct, 'id_product_attribute' => $idProductAttribute, 'id_offer' => $outcome->idOffer]);
