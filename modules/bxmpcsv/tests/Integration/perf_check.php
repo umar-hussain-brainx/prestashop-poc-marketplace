@@ -4,12 +4,14 @@
  * (1st run = master product creation, 2nd run = offer updates), throughput is printed, then everything created is
  * removed again (products, offers, categories, manufacturer, vendor, jobs).
  *
- *   docker compose exec -T -u www-data prestashop php modules/bxmpcsv/tests/Integration/perf_check.php [--rows=4000] [--keep]
+ *   docker compose exec -T -u www-data prestashop php modules/bxmpcsv/tests/Integration/perf_check.php [--rows=4000] [--keep] [--cleanup]
+ *
+ * --cleanup only removes what a previous (interrupted / --keep) run created.
  */
 if (PHP_SAPI !== 'cli') {
     exit('CLI only');
 }
-$o = getopt('', ['rows::', 'keep']);
+$o = getopt('', ['rows::', 'keep', 'cleanup']);
 $rows = max(10, (int) ($o['rows'] ?? 4000));
 require_once dirname(__DIR__, 4) . '/config/config.inc.php';
 require_once _PS_MODULE_DIR_ . 'bxmpcsv/autoload.php';
@@ -19,7 +21,7 @@ use BrainX\Csv\Worker\ImportWorker;
 $db = Db::getInstance();
 $p = _DB_PREFIX_;
 $file = sys_get_temp_dir() . '/bxmpcsv-perf.csv';
-passthru(PHP_BINARY . ' ' . escapeshellarg(_PS_MODULE_DIR_ . 'bxmpcsv/tools/generate_perf_csv.php') . ' --rows=' . $rows . ' --out=' . escapeshellarg($file) . ' --matched=100');
+isset($o['cleanup']) || passthru(PHP_BINARY . ' ' . escapeshellarg(_PS_MODULE_DIR_ . 'bxmpcsv/tools/generate_perf_csv.php') . ' --rows=' . $rows . ' --out=' . escapeshellarg($file) . ' --matched=100');
 
 $v = new BxmpVendor((int) BxmpVendor::getIdByCode('perf-vendor') ?: null);
 $v->name = 'Perf Vendor';
@@ -42,6 +44,9 @@ $run = static function (string $label) use ($file, $idVendor, $db, $p): void {
         memory_get_peak_usage(true) / 1048576, json_encode($job['stats']));
 };
 try {
+    if (isset($o['cleanup'])) {
+        return;
+    }
     $run('RUN 1 (create)');
     $run('RUN 2 (update)');
     printf("offers of perf vendor: %d, products created: %d\n", (int) $db->getValue("SELECT COUNT(*) FROM `{$p}bxmp_offer` WHERE id_vendor = {$idVendor}"),

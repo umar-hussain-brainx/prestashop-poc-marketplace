@@ -89,7 +89,7 @@ class AdminBxmpFeedsController extends ModuleAdminController
             ],
             'submit' => ['title' => $this->trans('Save', [], 'Admin.Actions')],
         ];
-        if (!$this->object->id) {
+        if (!$this->object->id && !Tools::isSubmit('submitAddbxmp_feed')) {
             $this->fields_value = ['schedule_minutes' => 60, 'active' => 1];
         }
 
@@ -106,19 +106,27 @@ class AdminBxmpFeedsController extends ModuleAdminController
             } catch (Throwable $e) {
                 $this->errors[] = $e->getMessage();
 
-                return false;
+                return $this->redisplayForm();
             }
         } elseif (filter_var($src, FILTER_VALIDATE_URL) === false) {
             $this->errors[] = $this->trans('Invalid URL.', [], 'Modules.Bxmpcsv.Admin');
 
-            return false;
+            return $this->redisplayForm();
         }
         if ((int) Tools::getValue('schedule_minutes') < 1) {
             $this->errors[] = $this->trans('The interval must be at least 1 minute.', [], 'Modules.Bxmpcsv.Admin');
 
-            return false;
+            return $this->redisplayForm();
         }
 
         return parent::processSave();
+    }
+
+    /** Keep the submitted form on screen after a validation error. */
+    private function redisplayForm(): bool
+    {
+        $this->display = (int) Tools::getValue('id_feed') ? 'edit' : 'add';
+
+        return false;
     }
 }
