@@ -99,6 +99,14 @@ decimal comma + BOM / `,` + dot / TAB — equal to the seeded offers), `samples/
 EAN and reference, new products incl. images and variants, ambiguous, conflict, invalid and warning rows).
 `tools/generate_perf_csv.php --rows=4000 --out=f.csv` generates synthetic files.
 
+## Measured performance (docker POC, 4,100-row file)
+
+- First import (3,999 master products created + 101 matched rows): ~33 rows/s; the cost is native `Product::add()` (~30 ms incl.
+  core module hooks). A 4,000-reference initial catalog takes ~2–3 min of background worker time.
+- Re-import (all 4,100 rows matched → offer updates): **405 rows/s** (10 s), 26 MB peak memory.
+- A worker killed mid-job (container restart) resumed from the last 500-row checkpoint without duplicates (rows redone after the
+  checkpoint match by EAN).
+
 ## Notes / limitations (POC)
 
 - One offer per vendor and product/combination (core unique key): two vendor SKUs mapped to the same combination overwrite
@@ -106,4 +114,6 @@ EAN and reference, new products incl. images and variants, ambiguous, conflict, 
 - Images are only imported when a master product is created; existing master product content is never overwritten by
   vendor files (the master catalog stays curated).
 - Created products use tax rules group `BXMPCSV_TAX_RULES_GROUP` and a single language value for all languages.
+- The per-chunk transaction is best-effort (some PS/native-module code commits implicitly); correctness on resume relies on
+  idempotent row processing (EAN / SKU matching), not on rollback.
 - Files are kept in `var/bxmp_csv/jobs/` (not web-accessible); there is no automatic purge yet.
