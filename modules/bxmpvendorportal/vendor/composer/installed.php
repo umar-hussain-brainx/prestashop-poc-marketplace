@@ -1,19 +1,19 @@
 <?php return array(
     'root' => array(
-        'name' => 'brainx/bxmpvendor',
+        'name' => 'brainx/bxmpvendorportal',
         'pretty_version' => 'dev-claude/bold-ramanujan-o4q2m3',
         'version' => 'dev-claude/bold-ramanujan-o4q2m3',
-        'reference' => 'a881c4fc311f13e5ce1d6ef2b373a8dc412caf19',
+        'reference' => 'a8d6023e0f3a7dc97142061cf764d4eabcf972d3',
         'type' => 'prestashop-module',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
         'dev' => false,
     ),
     'versions' => array(
-        'brainx/bxmpvendor' => array(
+        'brainx/bxmpvendorportal' => array(
             'pretty_version' => 'dev-claude/bold-ramanujan-o4q2m3',
             'version' => 'dev-claude/bold-ramanujan-o4q2m3',
-            'reference' => 'a881c4fc311f13e5ce1d6ef2b373a8dc412caf19',
+            'reference' => 'a8d6023e0f3a7dc97142061cf764d4eabcf972d3',
             'type' => 'prestashop-module',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

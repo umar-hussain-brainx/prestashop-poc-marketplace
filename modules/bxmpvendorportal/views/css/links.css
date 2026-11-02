@@ -1,0 +1,5 @@
+/* header + my-account links to the vendor portal (loaded for vendors only) */
+.bxmpv-navlink { display: inline-block; margin-left: 12px; }
+.bxmpv-navlink a { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; color: #24b9d7; }
+.bxmpv-navlink .material-icons { font-size: 18px; }
+#bxmpv-vendor-portal-link small { font-weight: normal; color: #7a7a7a; }

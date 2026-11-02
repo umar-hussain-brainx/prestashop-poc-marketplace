@@ -1,5 +1,5 @@
 {
-    "name": "brainx/bxmpvendor",
+    "name": "brainx/bxmpvendorportal",
     "description": "BrainX marketplace vendor portal (front-office vendor dashboards, offers, positioning, orders, analytics)",
     "type": "prestashop-module",
     "license": "proprietary",
