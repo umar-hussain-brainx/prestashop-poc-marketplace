@@ -22,7 +22,7 @@ class AdminBxmpSettlementsController extends BxmpAdminPageController
         parent::__construct();
         $this->finance = new FinanceRepository();
         $this->service = new SettlementService($this->finance);
-        $this->meta_title = 'Settlements';
+        $this->meta_title = ['Settlements'];
     }
 
     public static function columns(): array

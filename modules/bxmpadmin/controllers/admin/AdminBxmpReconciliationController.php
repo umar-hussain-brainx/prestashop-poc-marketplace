@@ -17,7 +17,7 @@ class AdminBxmpReconciliationController extends BxmpAdminPageController
     public function __construct()
     {
         parent::__construct();
-        $this->meta_title = 'Reconciliation';
+        $this->meta_title = ['Reconciliation'];
     }
 
     public static function vendorColumns(): array

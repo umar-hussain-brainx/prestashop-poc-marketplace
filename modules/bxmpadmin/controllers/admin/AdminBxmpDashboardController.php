@@ -50,7 +50,7 @@ class AdminBxmpDashboardController extends BxmpAdminPageController
     {
         parent::__construct();
         $this->repo = new AnalyticsRepository();
-        $this->meta_title = 'Marketplace dashboard';
+        $this->meta_title = ['Marketplace dashboard'];
     }
 
     public static function leagueColumns(): array

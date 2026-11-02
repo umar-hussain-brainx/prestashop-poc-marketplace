@@ -16,7 +16,7 @@ class AdminBxmpConditionsController extends BxmpAdminPageController
     public function __construct()
     {
         parent::__construct();
-        $this->meta_title = 'Commercial conditions';
+        $this->meta_title = ['Commercial conditions'];
     }
 
     public static function columns(): array

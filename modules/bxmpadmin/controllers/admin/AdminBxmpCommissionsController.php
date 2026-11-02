@@ -21,7 +21,7 @@ class AdminBxmpCommissionsController extends BxmpAdminPageController
         parent::__construct();
         $this->finance = new FinanceRepository();
         $this->commissions = new CommissionService($this->finance);
-        $this->meta_title = 'Commissions';
+        $this->meta_title = ['Commissions'];
     }
 
     public static function columns(): array

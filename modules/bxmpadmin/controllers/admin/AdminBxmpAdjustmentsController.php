@@ -28,7 +28,6 @@ class AdminBxmpAdjustmentsController extends ModuleAdminController
         $this->_defaultOrderWay = 'DESC';
 
         parent::__construct();
-        $this->meta_title = 'Commission adjustments';
 
         $this->_select = 'v.name AS vendor_name, vo.reference AS vendor_order_reference,
             (SELECT s.id_settlement FROM `' . _DB_PREFIX_ . 'bxmp_settlement` s WHERE s.id_vendor = a.id_vendor AND s.status IN (\'approved\', \'paid\')
