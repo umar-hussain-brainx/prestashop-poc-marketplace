@@ -1,0 +1,3 @@
+﻿vendor_sku;ean;reference;brand;title;description;category;price;discount_price;discount_from;discount_to;quantity;images;condition;variant_attributes;parent_reference;active
+SKU-001;8003000000017;MPN-001;Nordic Home;Nordic stoneware mug 350 ml;<p>Hand glazed stoneware mug.</p>;Home > Kitchen > Mugs;8,90;7,90;2026-12-01;2026-12-31;25;https://cdn.example.com/mug-1.jpg|https://cdn.example.com/mug-2.jpg;new;;;1
+SKU-002-BM;8003000100014;TEE-01-BM;BrainX Basics;Organic cotton tee;;Home > Clothes;21,90;;;;10;;new;Color:Black|Size:M;TEE-01;1

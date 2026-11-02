@@ -1,0 +1,14 @@
+vendor_sku	ean	reference	brand	title	price	discount_price	discount_from	discount_to	quantity	condition	active
+C-2-9	8001002000090	demo_3	Studio Design	Hummingbird printed sweater	33.75				33	new	1
+C-2-10	8001002000106	demo_3	Studio Design	Hummingbird printed sweater	30.87				3	new	1
+C-2-11	8001002000113	demo_3	Studio Design	Hummingbird printed sweater	34.46				25	new	1
+C-2-12	8001002000120	demo_3	Studio Design	Hummingbird printed sweater	36.98				27	new	1
+C-4-16	8001004000166	demo_5	Graphic Corner	The adventure begins Framed poster	31.32				10	new	1
+C-4-17	8001004000173	demo_5	Graphic Corner	The adventure begins Framed poster	51.45				40	new	1
+C-4-18	8001004000180	demo_5	Graphic Corner	The adventure begins Framed poster	77.42				7	new	1
+C-6-0	8002000000068	demo_11	Studio Design	Mug The best is yet to come	10.59				3	new	1
+C-8-0	8002000000082	demo_13	Studio Design	Mug Today is a good day	10.95				3	new	1
+C-10-24	8001010000242	demo_16	Studio Design	Brown bear cushion	16.82				36	new	1
+C-10-25	8001010000259	demo_16	Studio Design	Brown bear cushion	20.22				26	new	1
+VENDOR-C-P1	8000000000011	BXMP-P1		Product 1	22.00				50	new	1
+VENDOR-C-P2	8000000000028	BXMP-P2		Product 2	45.00				50	new	1
