@@ -8,7 +8,8 @@
     {if $bxmpco_vendor_orders|count == 0}
       <p class="text-muted">{if $bxmpco_is_marketplace}{l s='No vendor sub-order recorded for this order (see Marketplace logs, channel "checkout").' d='Modules.Bxmpcheckout.Admin'}{else}{l s='Not a marketplace order.' d='Modules.Bxmpcheckout.Admin'}{/if}</p>
     {else}
-    <table class="table">
+    <div class="table-responsive">
+    <table class="table table-sm">
       <thead>
         <tr>
           <th>{l s='Vendor order' d='Modules.Bxmpcheckout.Admin'}</th>
@@ -19,7 +20,7 @@
           <th class="text-right">{l s='Commission' d='Modules.Bxmpcheckout.Admin'}</th>
           <th class="text-right">{l s='Payout' d='Modules.Bxmpcheckout.Admin'}</th>
           <th>{l s='Payment transfer' d='Modules.Bxmpcheckout.Admin'}</th>
-          <th style="min-width:330px">{l s='Fulfilment (status / carrier / tracking)' d='Modules.Bxmpcheckout.Admin'}</th>
+          <th style="min-width:200px">{l s='Fulfilment (status / carrier / tracking)' d='Modules.Bxmpcheckout.Admin'}</th>
         </tr>
       </thead>
       <tbody>
@@ -32,16 +33,16 @@
           <td class="text-right"><strong>{$vo.total_paid_fmt}</strong></td>
           <td class="text-right">{$vo.commission_amount_fmt}<br><small class="text-muted">{$vo.commission_rate}%</small></td>
           <td class="text-right">{$vo.vendor_payout_fmt}</td>
-          <td><small>{$vo.payment_transfer_ref|default:'-'}</small></td>
+          <td style="max-width:150px;word-break:break-all"><small>{$vo.payment_transfer_ref|default:'-'}</small></td>
           <td>
-            <form method="post" action="{$bxmpco_action|escape:'html':'UTF-8'}" class="form-inline">
+            <form method="post" action="{$bxmpco_action|escape:'html':'UTF-8'}">
               <input type="hidden" name="id_order" value="{$bxmpco_id_order|intval}">
               <input type="hidden" name="id_vendor_order" value="{$vo.id_vendor_order|intval}">
-              <select name="status" class="form-control form-control-sm mr-1 mb-1">
+              <select name="status" class="form-control form-control-sm mb-1">
                 {foreach $bxmpco_statuses as $s}<option value="{$s}"{if $s == $vo.status} selected{/if}>{$s}</option>{/foreach}
               </select>
-              <input type="text" name="carrier_name" class="form-control form-control-sm mr-1 mb-1" style="width:90px" placeholder="{l s='Carrier' d='Modules.Bxmpcheckout.Admin'}" value="{$vo.carrier_name|escape:'html':'UTF-8'}">
-              <input type="text" name="tracking_number" class="form-control form-control-sm mr-1 mb-1" style="width:110px" placeholder="{l s='Tracking #' d='Modules.Bxmpcheckout.Admin'}" value="{$vo.tracking_number|escape:'html':'UTF-8'}">
+              <input type="text" name="carrier_name" class="form-control form-control-sm mr-1 mb-1" style="width:100%" placeholder="{l s='Carrier' d='Modules.Bxmpcheckout.Admin'}" value="{$vo.carrier_name|escape:'html':'UTF-8'}">
+              <input type="text" name="tracking_number" class="form-control form-control-sm mr-1 mb-1" style="width:100%" placeholder="{l s='Tracking #' d='Modules.Bxmpcheckout.Admin'}" value="{$vo.tracking_number|escape:'html':'UTF-8'}">
               <button type="submit" name="submitBxmpVendorOrder" value="1" class="btn btn-sm btn-primary mb-1">{l s='Save' d='Admin.Actions'}</button>
             </form>
           </td>
@@ -52,6 +53,7 @@
         <tr><th colspan="4" class="text-right">{l s='Totals' d='Modules.Bxmpcheckout.Admin'}</th><th class="text-right">{$bxmpco_totals.paid}</th><th class="text-right">{$bxmpco_totals.commission}</th><th class="text-right">{$bxmpco_totals.payout}</th><th colspan="2"></th></tr>
       </tfoot>
     </table>
+    </div>
     {/if}
   </div>
 </div>
